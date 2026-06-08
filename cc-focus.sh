@@ -18,8 +18,7 @@ tell application "iTerm"
     repeat with t in tabs of w
       repeat with s in sessions of t
         if id of s starts with "$SID" then
-          tell w to select t
-          tell s to select
+          tell t to select
           return
         end if
       end repeat

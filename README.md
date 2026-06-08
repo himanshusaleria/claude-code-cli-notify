@@ -11,19 +11,20 @@ No daemons, no background app, just two small shell scripts wired to Claude Code
 
 ## Install
 
-Requires macOS. Best on iTerm2 (tab-precise focus); also works on Apple Terminal (app-level focus only).
+Requires macOS. Tab-precise focus on iTerm2; app-level focus on Apple Terminal, Warp, Ghostty, Hyper, WezTerm, and the VS Code integrated terminal.
 
 Paste this into any Claude Code session and it'll set everything up globally for every future session:
 
 ```
 Install claude-code-cli-notify for native macOS notifications across all my Claude Code sessions:
 
-1. If ~/.claude/cc-notify doesn't exist, clone https://github.com/himanshusaleria/claude-code-cli-notify into it.
-2. Run: chmod +x ~/.claude/cc-notify/cc-notify.sh ~/.claude/cc-notify/cc-focus.sh
-3. Merge (don't overwrite) Notification and Stop hooks into ~/.claude/settings.json:
+1. Check $TERM_PROGRAM and tell me which terminal you detected — iTerm.app gets tab-precise focus, Apple_Terminal / WarpTerminal / ghostty / Hyper / WezTerm / vscode get app-level focus, anything else is a best-effort fallback. If $TERM_PROGRAM is empty or unfamiliar, ask me to confirm before continuing.
+2. If ~/.claude/cc-notify doesn't exist, clone https://github.com/himanshusaleria/claude-code-cli-notify into it.
+3. Run: chmod +x ~/.claude/cc-notify/cc-notify.sh ~/.claude/cc-notify/cc-focus.sh
+4. Merge (don't overwrite) Notification and Stop hooks into ~/.claude/settings.json:
    - Notification hook command: ~/.claude/cc-notify/cc-notify.sh input "Needs your input" Glass focus
    - Stop hook command: ~/.claude/cc-notify/cc-notify.sh stop "Done" none
-4. Test: ~/.claude/cc-notify/cc-notify.sh input "Test" Glass focus
+5. Test: ~/.claude/cc-notify/cc-notify.sh input "Test" Glass focus
 ```
 
 ### Manual install

@@ -34,8 +34,25 @@ EOF
   Apple_Terminal)
     osascript -e 'tell application "Terminal" to activate'
     ;;
+  WarpTerminal)
+    osascript -e 'tell application "Warp" to activate'
+    ;;
+  ghostty)
+    osascript -e 'tell application "Ghostty" to activate'
+    ;;
+  Hyper)
+    osascript -e 'tell application "Hyper" to activate'
+    ;;
+  WezTerm)
+    osascript -e 'tell application "WezTerm" to activate'
+    ;;
+  vscode)
+    osascript -e 'tell application "Visual Studio Code" to activate'
+    ;;
   *)
-    # Best effort: try to activate whichever app the user said they were in.
+    # Best effort: $TERM_PROGRAM sometimes matches the AppleScript app name,
+    # sometimes doesn't. Try it directly; if that fails the user gets a silent
+    # no-op and the banner is still visible.
     if [ -n "$TERM_PROG" ]; then
       osascript -e "tell application \"$TERM_PROG\" to activate" 2>/dev/null
     fi

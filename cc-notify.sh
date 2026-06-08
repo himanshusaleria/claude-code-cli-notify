@@ -15,6 +15,17 @@ MSG="${2:-Claude Code}"
 SND="${3:-}"
 MODE="${4:-}"
 
+# Claude Code pipes the hook event as JSON on stdin. If this Notification event
+# is a tool-permission ask (message contains "permission to use"), suppress the
+# alert — the user is here, they'll see the inline prompt; no need to chime or
+# steal focus.
+if [ ! -t 0 ]; then
+  PAYLOAD=$(cat)
+  if echo "$PAYLOAD" | grep -q '"message"[[:space:]]*:[[:space:]]*"[^"]*permission to use'; then
+    exit 0
+  fi
+fi
+
 SOUND_CLAUSE=""
 if [ -n "$SND" ] && [ "$SND" != "none" ]; then
   SOUND_CLAUSE=" sound name \"$SND\""

@@ -26,16 +26,30 @@ if [ ! -t 0 ]; then
   fi
 fi
 
+COOLDOWN="${CC_NOTIFY_COOLDOWN:-30}"
+STATE_FILE="${CC_NOTIFY_STATE:-$HOME/.claude/cc-notify.state}"
+NOW=$(date +%s)
+
 if [ "$MODE" = "focus" ]; then
   FRONT=$(osascript -e 'tell application "System Events" to name of first process whose frontmost is true' 2>/dev/null)
   case "$FRONT" in
     iTerm|iTerm2|Terminal|WarpTerminal|Warp|Ghostty|Hyper|WezTerm|Code)
       # User is already on a terminal/IDE — they'll see Claude Code inline,
-      # so suppress the banner and chime entirely. Avoids spamming on every
-      # turn end while the user is actively watching.
+      # so suppress the banner and chime entirely.
       exit 0
       ;;
   esac
+
+  # Cooldown — Claude Code's Notification hook fires on every turn end
+  # ("Claude is waiting for your input"). Without pacing, rapid-fire turns
+  # chime repeatedly while the user is in the loop (e.g. reading from Arc).
+  # Override with CC_NOTIFY_COOLDOWN env var.
+  if [ -f "$STATE_FILE" ]; then
+    LAST=$(tr -d '[:space:]' < "$STATE_FILE" 2>/dev/null)
+    if [ -n "$LAST" ] && [ "$LAST" -gt 0 ] 2>/dev/null && [ $((NOW - LAST)) -lt "$COOLDOWN" ]; then
+      exit 0
+    fi
+  fi
 fi
 
 SOUND_CLAUSE=""
@@ -45,6 +59,7 @@ fi
 osascript -e "display notification \"${MSG//\"/\\\"}\" with title \"Claude Code\"$SOUND_CLAUSE"
 
 if [ "$MODE" = "focus" ]; then
+  echo "$NOW" > "$STATE_FILE"
   DIR="$(cd "$(dirname "$0")" && pwd)"
   if [ -x "$DIR/cc-focus.sh" ]; then
     SID="${ITERM_SESSION_ID##*:}"

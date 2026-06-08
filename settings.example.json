@@ -1,0 +1,27 @@
+{
+  "_comment": "Merge these hook entries into ~/.claude/settings.json. Replace ABSOLUTE/PATH/TO with where you cloned this repo (or ~/.claude/cc-notify if you used the recommended path).",
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/ABSOLUTE/PATH/TO/claude-code-cli-notify/cc-notify.sh input \"Needs your input\" Glass focus"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/ABSOLUTE/PATH/TO/claude-code-cli-notify/cc-notify.sh stop \"Done\" none"
+          }
+        ]
+      }
+    ]
+  }
+}

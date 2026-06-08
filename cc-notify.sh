@@ -26,6 +26,18 @@ if [ ! -t 0 ]; then
   fi
 fi
 
+if [ "$MODE" = "focus" ]; then
+  FRONT=$(osascript -e 'tell application "System Events" to name of first process whose frontmost is true' 2>/dev/null)
+  case "$FRONT" in
+    iTerm|iTerm2|Terminal|WarpTerminal|Warp|Ghostty|Hyper|WezTerm|Code)
+      # User is already on a terminal/IDE — they'll see Claude Code inline,
+      # so suppress the banner and chime entirely. Avoids spamming on every
+      # turn end while the user is actively watching.
+      exit 0
+      ;;
+  esac
+fi
+
 SOUND_CLAUSE=""
 if [ -n "$SND" ] && [ "$SND" != "none" ]; then
   SOUND_CLAUSE=" sound name \"$SND\""
@@ -33,15 +45,9 @@ fi
 osascript -e "display notification \"${MSG//\"/\\\"}\" with title \"Claude Code\"$SOUND_CLAUSE"
 
 if [ "$MODE" = "focus" ]; then
-  FRONT=$(osascript -e 'tell application "System Events" to name of first process whose frontmost is true' 2>/dev/null)
-  case "$FRONT" in
-    iTerm|iTerm2|Terminal) ;;  # already on a terminal — don't steal focus
-    *)
-      DIR="$(cd "$(dirname "$0")" && pwd)"
-      if [ -x "$DIR/cc-focus.sh" ]; then
-        SID="${ITERM_SESSION_ID##*:}"
-        "$DIR/cc-focus.sh" "$SID" "$TERM_PROGRAM"
-      fi
-      ;;
-  esac
+  DIR="$(cd "$(dirname "$0")" && pwd)"
+  if [ -x "$DIR/cc-focus.sh" ]; then
+    SID="${ITERM_SESSION_ID##*:}"
+    "$DIR/cc-focus.sh" "$SID" "$TERM_PROGRAM"
+  fi
 fi
